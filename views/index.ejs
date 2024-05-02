@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node.js Listesi</title>
-</head>
-<body>
-    <h1>Alışveriş Listesi</h1>
+<%- include('partials/header.ejs') %>
+<h1>Alışveriş Listesi</h1>
     <form action="/items" method="POST">
         <input type="text" name="item" placeholder="Öğe ekle" required>
         <button type="submit">Ekle</button>
@@ -16,8 +9,6 @@
             <li><%= item.name %></li>
         <% }); %>
     </ul>
-    <form action="/items" method="DELETE">
-        <button type="submit">Tüm Öğeleri Sil</button>
-    </form>
-</body>
-</html>
+    <a href="/items">Tüm Öğeleri Sil</a>
+
+<%- include('partials/footer.ejs') %>

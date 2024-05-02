@@ -1,15 +1,15 @@
 const express = require('express');
 const mysql = require('mysql');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const items = require('./items');
 
 // MySQL bağlantı ayarları
 const connection = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root', // Kullanıcı adınıza göre değiştirin
-    password: 'password', // Şifrenizi girin
-    database: 'shopping_list' // Kullanmak istediğiniz veritabanının adı
+    password: '', // Şifrenizi girin
+    database: 'shopping_list'
 });
 
 connection.connect((err) => {
@@ -23,9 +23,14 @@ connection.connect((err) => {
 // Middleware'lerin eklenmesi
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.set('view engine', 'ejs');
 
-// Ana sayfayı görüntüleme
+// Views dizinini ayarla
+app.set('views', path.join(__dirname, 'views'));
+// EJS şablon motorunu ayarla
+app.set('view engine', 'ejs');
+// Static dosyaları sunmak için views klasörünü ayarla
+app.use(express.static(path.join(__dirname, 'views')));
+
 app.get('/', (req, res) => {
     // MySQL'den öğeleri al
     connection.query('SELECT * FROM items', (error, results) => {
@@ -33,7 +38,6 @@ app.get('/', (req, res) => {
         res.render('index', { items: results });
     });
 });
-
 
 app.post('/items', (req, res) => {
     console.log(req.body);
@@ -44,9 +48,7 @@ app.post('/items', (req, res) => {
     });
 });
 
-// Tüm öğeleri silme
-app.delete('/items', (req, res) => {
-    // MySQL'de tüm öğeleri sil
+app.get('/items', (req, res) => {
     connection.query('DELETE FROM items', (error, results) => {
         if (error) throw error;
         res.redirect('/');
