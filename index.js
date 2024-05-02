@@ -20,6 +20,8 @@ connection.connect((err) => {
     console.log('MySQL bağlantısı başarıyla kuruldu. Bağlantı kimliği: ' + connection.threadId);
 });
 
+// Middleware'lerin eklenmesi
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('view engine', 'ejs');
 
@@ -32,10 +34,14 @@ app.get('/', (req, res) => {
     });
 });
 
-// Yeni öğe ekleme
-app.post('items', (req, res) => {
-    console.log(req);
-    return res.send('Yeni öğe başarıyla eklendi.');
+
+app.post('/items', (req, res) => {
+    console.log(req.body);
+    const newItem = req.body.item;
+    connection.query('INSERT INTO items SET ?', { name: newItem }, (error, results) => {
+        if (error) throw error;
+        res.redirect('/');
+    });
 });
 
 // Tüm öğeleri silme
