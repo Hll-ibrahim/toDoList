@@ -57,7 +57,6 @@
             data:{'name':name},
             method: 'post',
             success: (response)=>{
-
                 getItems();
             },
             error: (xhr)=>{
@@ -75,6 +74,7 @@
             method: 'get',
             success: (response)=>{
                 console.log(response);
+                ul.empty();
                 response.forEach((item)=>{
                     li = document.createElement('li');
                     li.classList.add('list-group-item');
@@ -144,7 +144,8 @@
                 'id':id,
             },
             success: ()=>{
-                location.reload()
+                getItems();
+                $('#updateItemModal').modal('hide')
             },
             error: ()=>{
 
@@ -168,7 +169,7 @@
                     method: 'delete',
                     success: ()=>{
                         Swal.fire("Deleted!", "", "success");
-                        location.reload();
+                        getItems();
                     },
                     error: (xhr)=>{
                         console.log(xhr)
