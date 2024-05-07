@@ -17,7 +17,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/items', (req, res) => {
-    console.log(req.body);
     const newItem = req.body.item;
     connection.query('INSERT INTO items SET ?', { name: newItem }, (error, results) => {
         if (error) throw error;
@@ -32,12 +31,40 @@ router.get('/items', (req, res) => {
     });
 });
 
-router.get('/delete/:id', (req, res) => {
-    const userId = parseInt(req.params.id);
-    connection.query('DELETE FROM items WHERE id = '+userId, (error, results) => {
-        if (error) throw error;
-        res.redirect('/');
+router.delete('/delete', (req, res) => {
+    const userId = req.body.id;
+    connection.query('DELETE FROM items WHERE id = ?', userId, (error, results) => {
+        if (error) {
+            console.log(err);
+            throw error;
+        } else {
+            res.status(200).json('success');
+        }
     });
+});
+
+router.get('/getItem/:id',(req,res)=>{
+    const id = req.params.id;
+    connection.query('SELECT * FROM items WHERE id = ?', id, (error,result)=>{
+        if(error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+router.post('/update/post',(req,res)=>{
+    const id = req.body.id;
+    const name = req.body.name;
+    connection.query('UPDATE items SET name = ? WHERE id = ?', [name, id], (error, result) => {
+        if (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            res.status(200).json("success");
+        }
+    });
+
 });
 
 module.exports = router;

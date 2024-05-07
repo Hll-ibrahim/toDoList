@@ -36,7 +36,9 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use('/', itemRouter);
 app.post('/items', itemRouter);
 app.get('/items', itemRouter);
-app.get('/delete/:id',itemRouter);
+app.delete('/delete',itemRouter);
+app.get('/getItem/:id',itemRouter);
+app.post('/update/post',itemRouter);
 
 app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda çalışıyor.`);

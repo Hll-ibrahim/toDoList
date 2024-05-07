@@ -1,15 +1,39 @@
 <%- include('partials/header.ejs') %>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="updateItemModal" tabindex="-1" aria-labelledby="updateItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateItemModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="updateItemName" class="form-control">
+                <input type="hidden" id="updateItemId" class="form-control">
+                <button  onclick="updatePost()" class="btn btn-success my-2" id="updatePost">Save</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container mt-3">
     <div class="card">
         <div class="card-header">
-            <h1>Alışveriş Listesi</h1>
+            <h1>To Do List</h1>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col">
                     <form action="/items" method="POST">
                         <input class="form-control" type="text" name="item" placeholder="Öğe ekle" required>
-                        <button class="btn btn-success" type="submit">Ekle</button>
+                        <button class="btn btn-success" type="submit">Add</button>
                     </form>
                 </div>
                 <div class="col">
@@ -18,7 +42,8 @@
                             <li class="list-group-item">
                                 <div class="d-flex justify-content-between">
                                     <span><%= item.name %></span>
-                                    <a href="/delete/<%= item.id %>" class="btn btn-warning">x</a>
+                                    <button onclick="deleteItem('<%= item.id %>','<%= item.name %>')" class="btn btn-danger">Delete</button>
+                                    <button data-bs-toggle="modal" data-bs-target="#updateItemModal" onclick="openEditModal(<%= item.id %>)" class="btn btn-warning">Edit</button>
                                 </div>
                             </li>
                         <% }); %>
@@ -27,9 +52,70 @@
             </div>
         </div>
         <div class="card-footer">
-            <a class="btn btn-danger" href="/items">Tüm Öğeleri Sil</a>
+            <a class="btn btn-danger" href="/items">Clear</a>
         </div>
-
     </div>
 </div>
+<script>
+    function openEditModal(id){
+        $.ajax({
+            url: 'http://127.0.0.1:3000/getItem/'+id,
+            success: (response)=>{
+                $('#updateItemName').val(response[0].name);
+                $('#updateItemId').val(response[0].id);
+                console.log(response);
+            },
+            error: (xhr)=>{
+                console.log(xhr)
+            }
+        })
+    }
+
+    function updatePost(){
+        const name = $('#updateItemName').val();
+        const id = $('#updateItemId').val();
+        $.ajax({
+            url: 'http://127.0.0.1:3000/update/post',
+            type: 'post',
+            data: {
+                'name':name,
+                'id':id,
+            },
+            success: ()=>{
+                location.reload()
+            },
+            error: ()=>{
+
+            }
+        })
+    }
+
+    function deleteItem(id,name){
+        Swal.fire({
+            title: "Are You Sure?",
+            text: "\""+name+"\" item is about to be deleted.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            denyButtonText: `Cancel`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'http://127.0.0.1:3000/delete',
+                    data: {'id':id},
+                    method: 'delete',
+                    success: ()=>{
+                        Swal.fire("Deleted!", "", "success");
+                        location.reload();
+                    },
+                    error: (xhr)=>{
+                        console.log(xhr)
+                    }
+                });
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
+    }
+</script>
 <%- include('partials/footer.ejs') %>
