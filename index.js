@@ -34,8 +34,10 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 // routes
 app.use('/', itemRouter);
+app.get('/getItems', itemRouter);
+
+app.post('/createItem', itemRouter);
 app.post('/items', itemRouter);
-app.get('/items', itemRouter);
 app.delete('/delete',itemRouter);
 app.get('/getItem/:id',itemRouter);
 app.post('/update/post',itemRouter);

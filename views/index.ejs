@@ -31,22 +31,11 @@
         <div class="card-body">
             <div class="row">
                 <div class="col">
-                    <form action="/items" method="POST">
-                        <input class="form-control" type="text" name="item" placeholder="Öğe ekle" required>
-                        <button class="btn btn-success" type="submit">Add</button>
-                    </form>
+                        <input id="itemName" class="form-control" type="text" name="item" placeholder="Öğe ekle" required>
+                        <button onclick="createItem()" class="btn btn-success" type="submit">Add</button>
                 </div>
                 <div class="col">
-                    <ul class="list-group">
-                        <% items.forEach(item => { %>
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between">
-                                    <span><%= item.name %></span>
-                                    <button onclick="deleteItem('<%= item.id %>','<%= item.name %>')" class="btn btn-danger">Delete</button>
-                                    <button data-bs-toggle="modal" data-bs-target="#updateItemModal" onclick="openEditModal(<%= item.id %>)" class="btn btn-warning">Edit</button>
-                                </div>
-                            </li>
-                        <% }); %>
+                    <ul id="itemUl" class="list-group">
                     </ul>
                 </div>
             </div>
@@ -57,6 +46,79 @@
     </div>
 </div>
 <script>
+    $( document ).ready(function() {
+        getItems();
+    });
+
+    function createItem(){
+        const name = $('#itemName').val();
+        $.ajax({
+            url: 'http://127.0.0.1:3000/createItem',
+            data:{'name':name},
+            method: 'post',
+            success: (response)=>{
+
+                getItems();
+            },
+            error: (xhr)=>{
+                console.log(xhr);
+            },
+        })
+    }
+
+
+    function getItems(){
+        const ul = $('#itemUl');
+        var li,div,span,deleteButton,editButton,div2;
+        $.ajax({
+            url: 'http://127.0.0.1:3000/getItems',
+            method: 'get',
+            success: (response)=>{
+                console.log(response);
+                response.forEach((item)=>{
+                    li = document.createElement('li');
+                    li.classList.add('list-group-item');
+
+                    div = document.createElement('div');
+                    div.classList.add('d-flex');
+                    div.classList.add('justify-content-between');
+
+                    span = document.createElement('span');
+                    span.innerText = item.name;
+
+                    deleteButton = document.createElement('button');
+                    deleteButton.classList.add('btn');
+                    deleteButton.classList.add('btn-danger');
+                    deleteButton.setAttribute('onclick','deleteItem('+item.id+','+'\''+item.name+'\''+')');
+                    deleteButton.innerText = "Delete";
+
+                    editButton = document.createElement('button');
+                    editButton.classList.add('btn');
+                    editButton.classList.add('btn-warning');
+                    editButton.classList.add('mx-2');
+                    editButton.setAttribute('onclick','openEditModal('+item.id+')');
+                    editButton.setAttribute('data-bs-toggle','modal');
+                    editButton.setAttribute('data-bs-target','#updateItemModal');
+                    editButton.innerText = "Edit";
+
+                    div2 = document.createElement('div');
+                    div2.append(deleteButton);
+                    div2.append(editButton);
+
+                    div.append(span);
+                    div.append(div2);
+                    li.append(div);
+                    ul.append(li);
+
+                })
+                ul.append(li)
+                console.log(response);
+            },
+            error: (xhr)=>{
+                console.log(xhr);
+            }
+        })
+    };
     function openEditModal(id){
         $.ajax({
             url: 'http://127.0.0.1:3000/getItem/'+id,

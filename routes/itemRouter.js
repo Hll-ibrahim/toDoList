@@ -16,6 +16,15 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/getItems', (req, res) => {
+
+    connection.query('SELECT * FROM items', (error, results) => {
+        if (error) throw error;
+        res.json(results);
+    });
+});
+
+
 router.post('/items', (req, res) => {
     const newItem = req.body.item;
     connection.query('INSERT INTO items SET ?', { name: newItem }, (error, results) => {
@@ -23,14 +32,14 @@ router.post('/items', (req, res) => {
         res.redirect('/');
     });
 });
-
-router.get('/items', (req, res) => {
-    connection.query('DELETE FROM items', (error, results) => {
+router.post('/createItem',(req,res)=>{
+    const name = req.body.name;
+    console.log(name);
+    connection.query('INSERT INTO items SET ?', { name: name }, (error, results) => {
         if (error) throw error;
-        res.redirect('/');
+        res.json('success');
     });
-});
-
+})
 router.delete('/delete', (req, res) => {
     const userId = req.body.id;
     connection.query('DELETE FROM items WHERE id = ?', userId, (error, results) => {
