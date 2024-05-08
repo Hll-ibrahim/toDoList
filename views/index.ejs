@@ -57,6 +57,11 @@
             data:{'name':name},
             method: 'post',
             success: (response)=>{
+                swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    text: 'Added successfully'
+                })
                 getItems();
             },
             error: (xhr)=>{
@@ -64,7 +69,6 @@
             },
         })
     }
-
 
     function getItems(){
         const ul = $('#itemUl');
@@ -146,6 +150,11 @@
             success: ()=>{
                 getItems();
                 $('#updateItemModal').modal('hide')
+                swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    text: 'Change saved successfully.'
+                })
             },
             error: ()=>{
 
@@ -180,5 +189,6 @@
             }
         });
     }
+
 </script>
 <%- include('partials/footer.ejs') %>
